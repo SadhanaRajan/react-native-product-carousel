@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import useProducts from "../data/useProducts";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Carousel() {
-  const { products, loading } = useProducts();
+  const { products, loading, error, retry } = useProducts();
   const [index, setIndex] = useState(0);
   const [favorites, setFavorites] = useState({});
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -93,6 +93,22 @@ export default function Carousel() {
     return (
       <SafeAreaView style={styles.safeArea}>
         <ActivityIndicator size="large" style={{ marginTop: 40 }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!products.length) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No products available</Text>
+          <Text style={styles.emptyMessage}>
+            {error || "We couldn't load products right now. Try again shortly."}
+          </Text>
+          <TouchableOpacity onPress={retry} style={styles.retryButton}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
@@ -238,4 +254,39 @@ const styles = StyleSheet.create({
   },
 
   counter: { fontSize: 16, color: "#444" },
+
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111",
+  },
+
+  emptyMessage: {
+    fontSize: 16,
+    color: "#444",
+    textAlign: "center",
+    lineHeight: 22,
+  },
+
+  retryButton: {
+    marginTop: 4,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+  },
+
+  retryText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
 });
